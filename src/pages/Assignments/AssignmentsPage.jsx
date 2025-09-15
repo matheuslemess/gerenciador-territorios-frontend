@@ -72,7 +72,6 @@ const AssignmentsPage = () => {
 
       <Card sx={{ p: 2, mb: 4 }}>
         <Typography variant="h6" gutterBottom>Filtros e Ordenação</Typography>
-        {/* CÓDIGO CORRIGIDO ABAIXO */}
         <Grid container spacing={2} alignItems="center">
           <Grid item xs={12} md={2}>
             <TextField
@@ -84,7 +83,6 @@ const AssignmentsPage = () => {
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </Grid>
-
           <Grid item xs={12} sm={6} md={2}>
             <FormControl fullWidth size="small">
               <InputLabel>Status</InputLabel>
@@ -99,7 +97,6 @@ const AssignmentsPage = () => {
               </Select>
             </FormControl>
           </Grid>
-
           <Grid item xs={12} sm={6} md={4}>
             <FormControl fullWidth size="small">
               <InputLabel>Ordenar por</InputLabel>
@@ -113,7 +110,6 @@ const AssignmentsPage = () => {
               </Select>
             </FormControl>
           </Grid>
-
           <Grid item xs={12} sm={6} md={4}>
             <FormControl fullWidth size="small">
               <InputLabel>Não trabalhado na Campanha</InputLabel>
@@ -135,103 +131,101 @@ const AssignmentsPage = () => {
       {loading ? (
         <Box sx={{ display: 'flex', justifyContent: 'center', my: 4 }}><CircularProgress /></Box>
       ) : (
-        <Grid container spacing={3}>
+        // ATUALIZAÇÃO: Trocado Grid container por Stack para uma lista vertical
+        <Stack spacing={3}>
           {territories.map((territorio) => (
-            // CÓDIGO CORRIGIDO ABAIXO
-            <Grid item key={territorio.id} xs={12} sm={6} md={4} lg={3}>
-              <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-                <CardHeader
-                  action={
-                    <Tooltip title="Ver Mapa"><IconButton size="small" onClick={() => handleViewMapClick(territorio)}><MapIcon /></IconButton></Tooltip>
-                  }
-                  title={`Território Nº: ${territorio.numero}`}
-                  titleTypographyProps={{ variant: 'h6' }}
-                />
-                <CardContent sx={{ flexGrow: 1, pt: 0 }}>
-                  <Stack spacing={1.5}>
-                    <Box><Chip label={territorio.status} color={territorio.status === 'Disponível' ? 'success' : 'warning'} size="small" /></Box>
-                    <Typography variant="body2" color="text.secondary">{territorio.descricao}</Typography>
-                    {territorio.status === 'Em campo' ? (
-                      <Box sx={{ background: (theme) => theme.palette.action.hover, p: 1.5, borderRadius: 1 }}>
-                        <Typography variant="body2" sx={{ fontWeight: 'bold' }}>Com: {territorio.pessoa_nome}</Typography>
-                        {territorio.campanha_titulo && (
-                          <Typography variant="caption" sx={{ display: 'flex', alignItems: 'center', mt: 0.5, color: 'text.secondary' }}>
-                            <CampaignIcon sx={{ fontSize: 16, mr: 0.5 }} />
-                            {territorio.campanha_titulo}
-                          </Typography>
-                        )}
-                      </Box>
-                    ) : (
-                      territorio.ultima_devolucao && (
-                        <Typography variant="caption" color="text.secondary">
-                          Última conclusão: {new Date(territorio.ultima_devolucao).toLocaleDateString('pt-BR')}
+            // O Grid item foi removido, e a key foi movida para o Card
+            <Card key={territorio.id} sx={{ display: 'flex', flexDirection: 'column' }}>
+              <CardHeader
+                action={
+                  <Tooltip title="Ver Mapa"><IconButton size="small" onClick={() => handleViewMapClick(territorio)}><MapIcon /></IconButton></Tooltip>
+                }
+                title={`Território Nº: ${territorio.numero}`}
+                titleTypographyProps={{ variant: 'h6' }}
+              />
+              <CardContent sx={{ flexGrow: 1, pt: 0 }}>
+                <Stack spacing={1.5}>
+                  <Box><Chip label={territorio.status} color={territorio.status === 'Disponível' ? 'success' : 'warning'} size="small" /></Box>
+                  <Typography variant="body2" color="text.secondary">{territorio.descricao}</Typography>
+                  {territorio.status === 'Em campo' ? (
+                    <Box sx={{ background: (theme) => theme.palette.action.hover, p: 1.5, borderRadius: 1 }}>
+                      <Typography variant="body2" sx={{ fontWeight: 'bold' }}>Com: {territorio.pessoa_nome}</Typography>
+                      {territorio.campanha_titulo && (
+                        <Typography variant="caption" sx={{ display: 'flex', alignItems: 'center', mt: 0.5, color: 'text.secondary' }}>
+                          <CampaignIcon sx={{ fontSize: 16, mr: 0.5 }} />
+                          {territorio.campanha_titulo}
                         </Typography>
-                      )
-                    )}
-                  </Stack>
-                </CardContent>
-                <Divider />
-                <CardActions sx={{ p: 2 }}>
-                  {territorio.status === 'Disponível' ? (
-                    <Box sx={{ width: '100%' }}>
-                      <FormControl fullWidth size="small">
-                        <InputLabel id={`label-${territorio.id}`}>Designar para...</InputLabel>
+                      )}
+                    </Box>
+                  ) : (
+                    territorio.ultima_devolucao && (
+                      <Typography variant="caption" color="text.secondary">
+                        Última conclusão: {new Date(territorio.ultima_devolucao).toLocaleDateString('pt-BR')}
+                      </Typography>
+                    )
+                  )}
+                </Stack>
+              </CardContent>
+              <Divider />
+              <CardActions sx={{ p: 2 }}>
+                {territorio.status === 'Disponível' ? (
+                  <Box sx={{ width: '100%' }}>
+                    <FormControl fullWidth size="small">
+                      <InputLabel id={`label-${territorio.id}`}>Designar para...</InputLabel>
+                      <Select
+                        labelId={`label-${territorio.id}`}
+                        label="Designar para..."
+                        value={selectedPessoa[territorio.id] || ''}
+                        onChange={(e) => handlePessoaSelect(territorio.id, e.target.value)}
+                      >
+                        {persons.map((p) => (
+                          <MenuItem key={p.id} value={p.id}>
+                            {p.nome}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                    {activeCampaigns.length > 0 && (
+                      <FormControl sx={{ mt: 2 }} fullWidth size="small">
+                        <InputLabel>Designar na Campanha</InputLabel>
                         <Select
-                          labelId={`label-${territorio.id}`}
-                          label="Designar para..."
-                          value={selectedPessoa[territorio.id] || ''}
-                          onChange={(e) => handlePessoaSelect(territorio.id, e.target.value)}
+                          value={selectedCampaign[territorio.id] || ''}
+                          label="Designar na Campanha"
+                          onChange={(e) => setSelectedCampaign(prev => ({ ...prev, [territorio.id]: e.target.value }))}
                         >
-                          {persons.map((p) => (
-                            <MenuItem key={p.id} value={p.id}>
-                              {p.nome}
-                            </MenuItem>
+                          <MenuItem value="">Nenhuma</MenuItem>
+                          {activeCampaigns.map(c => (
+                            <MenuItem key={c.id} value={c.id}>{c.titulo}</MenuItem>
                           ))}
                         </Select>
                       </FormControl>
-                      {activeCampaigns.length > 0 && (
-                        <FormControl sx={{ mt: 2 }} fullWidth size="small">
-                          <InputLabel>Designar na Campanha</InputLabel>
-                          <Select
-                            value={selectedCampaign[territorio.id] || ''}
-                            label="Designar na Campanha"
-                            onChange={(e) => setSelectedCampaign(prev => ({ ...prev, [territorio.id]: e.target.value }))}
-                          >
-                            <MenuItem value="">Nenhuma</MenuItem>
-                            {activeCampaigns.map(c => (
-                              <MenuItem key={c.id} value={c.id}>{c.titulo}</MenuItem>
-                            ))}
-                          </Select>
-                        </FormControl>
-                      )}
-                      <Button
-                        fullWidth
-                        variant="contained"
-                        size="small"
-                        sx={{ mt: 2 }}
-                        onClick={() => handleAssign(territorio.id)}
-                      >
-                        Designar
-                      </Button>
-                    </Box>
-                  ) : (
+                    )}
                     <Button
                       fullWidth
-                      variant="outlined"
+                      variant="contained"
                       size="small"
-                      onClick={() => handleReturn(territorio.id)}
+                      sx={{ mt: 2 }}
+                      onClick={() => handleAssign(territorio.id)}
                     >
-                      Devolver
+                      Designar
                     </Button>
-                  )}
-                </CardActions>
-              </Card>
-            </Grid>
+                  </Box>
+                ) : (
+                  <Button
+                    fullWidth
+                    variant="outlined"
+                    size="small"
+                    onClick={() => handleReturn(territorio.id)}
+                  >
+                    Devolver
+                  </Button>
+                )}
+              </CardActions>
+            </Card>
           ))}
-        </Grid>
+        </Stack>
       )}
 
-      {/* Modal de Mapa */}
       <Dialog open={isMapModalOpen} onClose={handleCloseMapModal} maxWidth="md">
         <DialogTitle>Mapa do Território Nº: {viewingMap.numero}</DialogTitle>
         <DialogContent>
