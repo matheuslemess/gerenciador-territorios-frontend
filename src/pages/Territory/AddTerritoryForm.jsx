@@ -104,7 +104,7 @@ const AddTerritoryForm = ({ onSuccess, id }) => {
             value={descricao}
             onChange={(e) => setDescricao(e.target.value)}
           />
-          <Box sx={{ mt: 2 }}>
+          {/* <Box sx={{ mt: 2 }}>
             <Button
               variant="outlined"
               component="label"
@@ -124,7 +124,7 @@ const AddTerritoryForm = ({ onSuccess, id }) => {
                 {imagem.name}
               </Typography>
             )}
-          </Box>
+          </Box> */}
         </Box>
       )}
     </>
