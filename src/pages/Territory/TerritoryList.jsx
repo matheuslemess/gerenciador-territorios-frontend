@@ -3,16 +3,39 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import { useTerritories } from '../../hooks/useTerritories';
-import { Box, IconButton, Tooltip, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Button, TextField, Typography } from '@mui/material';
+import { 
+  Box, 
+  IconButton, 
+  Tooltip, 
+  Dialog, 
+  DialogActions, 
+  DialogContent, 
+  DialogContentText, 
+  DialogTitle, 
+  Button, 
+  TextField, 
+  Typography,
+  // 1. Novas importações para o layout de Card
+  Card,
+  CardHeader,
+  CardContent,
+  Stack,
+  Chip,
+  Menu,
+  MenuItem,
+  ListItemIcon,
+  ListItemText,
+  Skeleton
+} from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import MapIcon from '@mui/icons-material/Map';
-import { DataGrid } from '@mui/x-data-grid';
-import { ptBR } from '@mui/x-data-grid/locales';
+import MoreVertIcon from '@mui/icons-material/MoreVert'; // Ícone do menu de ações
 
 const TerritoryList = () => {
   const { territories, loading, fetchTerritories } = useTerritories();
 
+  // Estados para os modais existentes
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editingTerritory, setEditingTerritory] = useState(null);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
@@ -20,14 +43,35 @@ const TerritoryList = () => {
   const [isMapModalOpen, setIsMapModalOpen] = useState(false);
   const [viewingMap, setViewingMap] = useState({ numero: '', url: '' });
 
+  // 2. Estados para controlar o Menu de Ações de cada card
+  const [menuAnchorEl, setMenuAnchorEl] = useState(null);
+  const [currentTerritory, setCurrentTerritory] = useState(null);
+
+  const handleMenuOpen = (event, territory) => {
+    setMenuAnchorEl(event.currentTarget);
+    setCurrentTerritory(territory);
+  };
+  const handleMenuClose = () => {
+    setMenuAnchorEl(null);
+    setCurrentTerritory(null);
+  };
+
   const handleEditClick = (territory) => {
+    handleMenuClose();
     setEditingTerritory(territory);
     setIsEditModalOpen(true);
   };
   
   const handleDeleteClick = (territoryId) => {
+    handleMenuClose();
     setTerritoryToDelete(territoryId);
     setIsConfirmOpen(true);
+  };
+
+  const handleViewMapClick = (territorio) => {
+    handleMenuClose();
+    setViewingMap({ numero: territorio.numero, url: territorio.url_imagem });
+    setIsMapModalOpen(true);
   };
   
   const API_URL = import.meta.env.VITE_API_URL;
@@ -66,71 +110,69 @@ const TerritoryList = () => {
     setIsEditModalOpen(false);
     setEditingTerritory(null);
   };
-
-  const handleViewMapClick = (territorio) => {
-    setViewingMap({ numero: territorio.numero, url: territorio.url_imagem });
-    setIsMapModalOpen(true);
-  };
   
   const handleCloseMapModal = () => setIsMapModalOpen(false);
 
-  const columns = [
-    { field: 'numero', headerName: 'Número', width: 100 },
-    { field: 'descricao', headerName: 'Descrição', flex: 1, minWidth: 250 },
-    { field: 'status', headerName: 'Status', width: 130 },
-    {
-      field: 'actions',
-      headerName: 'Ações',
-      sortable: false,
-      filterable: false,
-      width: 150,
-      align: 'center',
-      headerAlign: 'center',
-      renderCell: (params) => (
-        <Box>
-          <Tooltip title="Ver Mapa">
-            <IconButton onClick={() => handleViewMapClick(params.row)}>
-              <MapIcon />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="Editar">
-            <IconButton onClick={() => handleEditClick(params.row)}>
-              <EditIcon />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="Excluir">
-            <IconButton onClick={() => handleDeleteClick(params.row.id)}>
-              <DeleteIcon />
-            </IconButton>
-          </Tooltip>
-        </Box>
-      ),
-    },
-  ];
+  // 3. A constante "columns" do DataGrid foi removida.
+
+  // 4. Se estiver carregando, mostra esqueletos de cards
+  if (loading) {
+    return (
+      <Stack spacing={2}>
+        <Skeleton variant="rounded" height={120} />
+        <Skeleton variant="rounded" height={120} />
+        <Skeleton variant="rounded" height={120} />
+      </Stack>
+    );
+  }
 
   return (
     <>
-      {/* MELHORIA 2: Container da tabela com rolagem horizontal */}
-      <Box sx={{ width: '100%', overflowX: 'auto' }}>
-        <DataGrid
-          rows={territories}
-          columns={columns}
-          loading={loading}
-          autoHeight
-          localeText={ptBR.components.MuiDataGrid.defaultProps.localeText}
-          initialState={{ pagination: { paginationModel: { pageSize: 10 } } }}
-          pageSizeOptions={[10, 25, 50]}
-           sx={{
-            // Largura mínima para garantir que a rolagem funcione bem
-            minWidth: 650,
-            '& .MuiDataGrid-cell:focus, & .MuiDataGrid-cell:focus-within': {
-              outline: 'none !important',
-            },
-          }}
-        />
-      </Box>
+      {/* 5. DataGrid substituído por um Stack de Cards */}
+      <Stack spacing={2}>
+        {territories.map((territory) => (
+          <Card key={territory.id} variant="outlined">
+            <CardHeader
+              action={
+                <IconButton onClick={(e) => handleMenuOpen(e, territory)}>
+                  <MoreVertIcon />
+                </IconButton>
+              }
+              title={`Território Nº: ${territory.numero}`}
+              subheader={territory.descricao}
+            />
+            <CardContent sx={{ pt: 0 }}>
+              <Chip 
+                label={territory.status} 
+                color={territory.status === 'Disponível' ? 'success' : 'warning'}
+                size="small" 
+              />
+            </CardContent>
+          </Card>
+        ))}
+      </Stack>
 
-      {/* Modal de Edição */}
+      {/* 6. Menu de Ações para os cards */}
+      <Menu
+        anchorEl={menuAnchorEl}
+        open={Boolean(menuAnchorEl)}
+        onClose={handleMenuClose}
+      >
+        <MenuItem onClick={() => handleViewMapClick(currentTerritory)}>
+          <ListItemIcon><MapIcon fontSize="small" /></ListItemIcon>
+          <ListItemText>Ver Mapa</ListItemText>
+        </MenuItem>
+        <MenuItem onClick={() => handleEditClick(currentTerritory)}>
+          <ListItemIcon><EditIcon fontSize="small" /></ListItemIcon>
+          <ListItemText>Editar</ListItemText>
+        </MenuItem>
+        <MenuItem onClick={() => handleDeleteClick(currentTerritory.id)} sx={{ color: 'error.main' }}>
+          <ListItemIcon><DeleteIcon fontSize="small" color="error" /></ListItemIcon>
+          <ListItemText>Excluir</ListItemText>
+        </MenuItem>
+      </Menu>
+
+      {/* Modais existentes (não precisam de alteração) */}
       <Dialog open={isEditModalOpen} onClose={handleCloseEditModal} fullWidth maxWidth="sm">
         <DialogTitle>Editar Território</DialogTitle>
         <DialogContent>
@@ -143,7 +185,6 @@ const TerritoryList = () => {
         </DialogActions>
       </Dialog>
       
-      {/* Modal de Confirmação de Exclusão */}
       <Dialog open={isConfirmOpen} onClose={() => setIsConfirmOpen(false)}>
         <DialogTitle>Confirmar Exclusão</DialogTitle>
         <DialogContent><DialogContentText>Tem certeza que deseja excluir este território?</DialogContentText></DialogContent>
@@ -153,7 +194,6 @@ const TerritoryList = () => {
         </DialogActions>
       </Dialog>
 
-      {/* Modal do Mapa */}
       <Dialog open={isMapModalOpen} onClose={handleCloseMapModal} maxWidth="md">
         <DialogTitle>Mapa do Território Nº: {viewingMap.numero}</DialogTitle>
         <DialogContent>

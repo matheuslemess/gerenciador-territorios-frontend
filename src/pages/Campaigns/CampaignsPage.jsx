@@ -5,11 +5,19 @@ import {
   Button,
   Typography,
   TextField,
-  Tooltip,
-  IconButton,
+  // 1. Novas importações para o layout de Card
+  Card,
+  CardHeader,
+  CardContent,
+  Stack,
+  Skeleton,
+  LinearProgress,
+  Menu,
+  MenuItem,
+  ListItemIcon,
+  ListItemText,
+  IconButton
 } from '@mui/material';
-import { DataGrid } from '@mui/x-data-grid';
-import { ptBR } from '@mui/x-data-grid/locales';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
@@ -18,22 +26,35 @@ import 'dayjs/locale/pt-br';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 import CustomModal from '../../components/ui/CustomModal';
 
 const CampaignsPage = () => {
   const { campaigns, loading, createCampaign, updateCampaign, deleteCampaign } = useCampaigns();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCampaign, setEditingCampaign] = useState(null);
-
   const [titulo, setTitulo] = useState('');
   const [dataInicio, setDataInicio] = useState(null);
   const [dataFim, setDataFim] = useState(null);
 
+  // 2. Estados para controlar o Menu de Ações
+  const [menuAnchorEl, setMenuAnchorEl] = useState(null);
+  const [currentCampaignForMenu, setCurrentCampaignForMenu] = useState(null);
+
+  const handleMenuOpen = (event, campaign) => {
+    setMenuAnchorEl(event.currentTarget);
+    setCurrentCampaignForMenu(campaign);
+  };
+  const handleMenuClose = () => {
+    setMenuAnchorEl(null);
+    setCurrentCampaignForMenu(null);
+  };
+
   useEffect(() => {
     if (editingCampaign) {
       setTitulo(editingCampaign.titulo);
-      setDataInicio(dayjs(editingCampaign.data_inicio));
-      setDataFim(dayjs(editingCampaign.data_fim));
+      setDataInicio(editingCampaign.data_inicio ? dayjs(editingCampaign.data_inicio) : null);
+      setDataFim(editingCampaign.data_fim ? dayjs(editingCampaign.data_fim) : null);
     } else {
       setTitulo('');
       setDataInicio(null);
@@ -42,6 +63,7 @@ const CampaignsPage = () => {
   }, [editingCampaign]);
 
   const handleOpenModal = (campaign = null) => {
+    handleMenuClose();
     setEditingCampaign(campaign);
     setIsModalOpen(true);
   };
@@ -51,6 +73,11 @@ const CampaignsPage = () => {
     setEditingCampaign(null);
   };
 
+  const handleDeleteCampaign = (campaignId) => {
+    handleMenuClose();
+    deleteCampaign(campaignId);
+  }
+
   const handleSubmit = async () => {
     const campaignData = {
       titulo,
@@ -58,81 +85,70 @@ const CampaignsPage = () => {
       data_fim: dataFim ? dataFim.format('YYYY-MM-DD') : null,
     };
 
-    try {
-      if (editingCampaign) {
-        await updateCampaign(editingCampaign.id, campaignData);
-      } else {
-        await createCampaign(campaignData);
-      }
-      handleCloseModal();
-    } catch (error) {
-      console.error('Falha ao salvar campanha:', error);
+    if (editingCampaign) {
+      await updateCampaign(editingCampaign.id, campaignData);
+    } else {
+      await createCampaign(campaignData);
     }
+    handleCloseModal();
   };
 
-  const columns = [
-    { field: 'titulo', headerName: 'Título da Campanha', flex: 1, minWidth: 250 },
-    {
-      field: 'trabalhados_count',
-      headerName: 'Trabalhados',
-      width: 120,
-      align: 'center',
-      headerAlign: 'center',
-    },
-    {
-      field: 'faltam_count',
-      headerName: 'Faltam',
-      width: 100,
-      align: 'center',
-      headerAlign: 'center',
-    },
-    {
-      field: 'data_inicio',
-      headerName: 'Início',
-      width: 130,
-      renderCell: (params) => params.value ? dayjs(params.value).format('DD/MM/YYYY') : '',
-    },
-    {
-      field: 'data_fim',
-      headerName: 'Fim',
-      width: 130,
-      renderCell: (params) => params.value ? dayjs(params.value).format('DD/MM/YYYY') : '',
-    },
-    {
-      field: 'actions',
-      headerName: 'Ações',
-      sortable: false,
-      width: 120,
-      align: 'center',
-      headerAlign: 'center',
-      renderCell: (params) => (
-        <Box>
-          <Tooltip title="Editar">
-            <IconButton onClick={() => handleOpenModal(params.row)}>
-              <EditIcon />
+  // 3. A definição de "columns" do DataGrid foi removida.
+
+  // Card de Progresso da Campanha aninhado para reutilização
+  const CampaignProgressCard = ({ campaign }) => {
+    const trabalhados = parseInt(campaign.trabalhados_count, 10) || 0;
+    const total = parseInt(campaign.total_territorios, 10) || 0;
+    const faltam = total - trabalhados;
+    const progresso = total > 0 ? (trabalhados / total) * 100 : 0;
+  
+    return (
+      <Card key={campaign.id} variant="outlined">
+        <CardHeader
+          action={
+            <IconButton onClick={(e) => handleMenuOpen(e, campaign)}>
+              <MoreVertIcon />
             </IconButton>
-          </Tooltip>
-          <Tooltip title="Excluir">
-            <IconButton onClick={() => deleteCampaign(params.row.id)}>
-              <DeleteIcon />
-            </IconButton>
-          </Tooltip>
-        </Box>
-      ),
-    },
-  ];
+          }
+          title={campaign.titulo}
+          titleTypographyProps={{ variant: 'h6' }}
+          subheader={`De ${dayjs(campaign.data_inicio).format('DD/MM/YY')} a ${dayjs(campaign.data_fim).format('DD/MM/YY')}`}
+        />
+        <CardContent>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+            <Typography variant="body2">Progresso</Typography>
+            <Typography variant="body2">{progresso.toFixed(0)}%</Typography>
+          </Box>
+          <LinearProgress variant="determinate" value={progresso} sx={{ height: 8, borderRadius: 5 }} />
+          <Box sx={{ display: 'flex', justifyContent: 'space-around', mt: 2, textAlign: 'center' }}>
+            <Box>
+              <Typography variant="h6" sx={{ fontWeight: 'bold' }}>{trabalhados}</Typography>
+              <Typography variant="caption">Trabalhados</Typography>
+            </Box>
+            <Box>
+              <Typography variant="h6" sx={{ fontWeight: 'bold' }}>{faltam}</Typography>
+              <Typography variant="caption">Faltam</Typography>
+            </Box>
+            <Box>
+              <Typography variant="h6" sx={{ fontWeight: 'bold' }}>{total}</Typography>
+              <Typography variant="caption">Total</Typography>
+            </Box>
+          </Box>
+        </CardContent>
+      </Card>
+    );
+  };
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="pt-br">
-      {/* ATUALIZAÇÃO 1: Cabeçalho se torna responsivo */}
       <Box
         sx={{
           display: 'flex',
-          flexDirection: { xs: 'column', sm: 'row' }, // Empilha em telas pequenas, fica em linha em telas maiores
+          flexDirection: { xs: 'column', sm: 'row' },
           justifyContent: 'space-between',
-          alignItems: { xs: 'stretch', sm: 'center' }, // Alinhamento ajustado para cada modo
+          alignItems: { xs: 'stretch', sm: 'center' },
           mb: 3,
-          gap: 2, // Espaçamento entre os itens (útil quando empilhado)
+          gap: 2,
         }}
       >
         <Typography variant="h4" component="h1">
@@ -142,23 +158,41 @@ const CampaignsPage = () => {
           variant="contained"
           startIcon={<AddCircleOutlineIcon />}
           onClick={() => handleOpenModal()}
+          sx={{ width: { xs: '100%', sm: 'auto' } }}
         >
           Nova Campanha
         </Button>
       </Box>
 
-      {/* ATUALIZAÇÃO 2: Container da tabela agora permite rolagem horizontal */}
-      <Box sx={{ width: '100%', overflowX: 'auto' }}>
-        <DataGrid
-          rows={campaigns}
-          columns={columns}
-          loading={loading}
-          autoHeight
-          localeText={ptBR.components.MuiDataGrid.defaultProps.localeText}
-          // Garante que a tabela tenha uma largura mínima, forçando a rolagem a aparecer
-          sx={{ minWidth: 700 }}
-        />
-      </Box>
+      {/* 4. DataGrid substituído por Stack de Cards e Skeletons */}
+      {loading ? (
+        <Stack spacing={2}>
+          <Skeleton variant="rounded" height={180} />
+          <Skeleton variant="rounded" height={180} />
+        </Stack>
+      ) : (
+        <Stack spacing={2}>
+          {campaigns.map((campaign) => (
+            <CampaignProgressCard key={campaign.id} campaign={campaign} />
+          ))}
+        </Stack>
+      )}
+
+      {/* 5. Menu de Ações para os cards */}
+      <Menu
+        anchorEl={menuAnchorEl}
+        open={Boolean(menuAnchorEl)}
+        onClose={handleMenuClose}
+      >
+        <MenuItem onClick={() => handleOpenModal(currentCampaignForMenu)}>
+          <ListItemIcon><EditIcon fontSize="small" /></ListItemIcon>
+          <ListItemText>Editar</ListItemText>
+        </MenuItem>
+        <MenuItem onClick={() => handleDeleteCampaign(currentCampaignForMenu.id)} sx={{ color: 'error.main' }}>
+          <ListItemIcon><DeleteIcon fontSize="small" color="error" /></ListItemIcon>
+          <ListItemText>Excluir</ListItemText>
+        </MenuItem>
+      </Menu>
 
       <CustomModal
         open={isModalOpen}
@@ -167,29 +201,9 @@ const CampaignsPage = () => {
         onConfirm={handleSubmit}
         confirmText="Salvar"
       >
-        <TextField
-          autoFocus
-          margin="dense"
-          label="Título da Campanha"
-          type="text"
-          fullWidth
-          variant="outlined"
-          value={titulo}
-          onChange={(e) => setTitulo(e.target.value)}
-          sx={{ mt: 1 }}
-        />
-        <DatePicker
-          label="Data de Início"
-          value={dataInicio}
-          onChange={(newValue) => setDataInicio(newValue)}
-          sx={{ mt: 2, width: '100%' }}
-        />
-        <DatePicker
-          label="Data de Fim"
-          value={dataFim}
-          onChange={(newValue) => setDataFim(newValue)}
-          sx={{ mt: 2, width: '100%' }}
-        />
+        <TextField autoFocus margin="dense" label="Título da Campanha" type="text" fullWidth variant="outlined" value={titulo} onChange={(e) => setTitulo(e.target.value)} sx={{ mt: 1 }} />
+        <DatePicker label="Data de Início" value={dataInicio} onChange={(newValue) => setDataInicio(newValue)} sx={{ mt: 2, width: '100%' }} />
+        <DatePicker label="Data de Fim" value={dataFim} onChange={(newValue) => setDataFim(newValue)} sx={{ mt: 2, width: '100%' }} />
       </CustomModal>
     </LocalizationProvider>
   );
