@@ -30,41 +30,46 @@ const AddTerritoryForm = ({ onSuccess, id }) => {
     setNumero(numeroApenas);
   };
 
-const API_URL = import.meta.env.VITE_API_URL;
+  const API_URL = import.meta.env.VITE_API_URL;
 
-const handleSubmit = async (event) => {
-  event.preventDefault();
-  if (!numero || !imagem) {
-    toast.error('Número e Imagem do Mapa são obrigatórios.');
-    return;
-  }
-
-  setLoading(true);
-  const formData = new FormData();
-  formData.append('numero', numero);
-  formData.append('descricao', descricao);
-  formData.append('imagem', imagem);
-
-  try {
-    await axios.post(`${API_URL}/territorios`, formData);
-    toast.success('Território cadastrado com sucesso!');
-
-    setNumero('');
-    setDescricao('');
-    setImagem(null);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = null;
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    // ALTERAÇÃO: Verificando agora 'numero' e 'descricao'
+    if (!numero || !descricao) {
+      toast.error('Número e Nome do Território são obrigatórios.');
+      return;
     }
 
-    fetchTerritories();
-    if (onSuccess) onSuccess(); // fecha o modal se for passado pelo parent
-  } catch (error) {
-    console.error('Erro ao cadastrar território:', error);
-    toast.error(error.response?.data?.error || 'Falha ao cadastrar território.');
-  } finally {
-    setLoading(false);
-  }
-};
+    setLoading(true);
+    const formData = new FormData();
+    formData.append('numero', numero);
+    formData.append('descricao', descricao);
+    
+    // ALTERAÇÃO: Adiciona a imagem ao formData apenas se ela existir
+    if (imagem) {
+      formData.append('imagem', imagem);
+    }
+
+    try {
+      await axios.post(`${API_URL}/territorios`, formData);
+      toast.success('Território cadastrado com sucesso!');
+
+      setNumero('');
+      setDescricao('');
+      setImagem(null);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = null;
+      }
+
+      fetchTerritories();
+      if (onSuccess) onSuccess(); // fecha o modal se for passado pelo parent
+    } catch (error) {
+      console.error('Erro ao cadastrar território:', error);
+      toast.error(error.response?.data?.error || 'Falha ao cadastrar território.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
 
   return (
@@ -105,7 +110,7 @@ const handleSubmit = async (event) => {
               component="label"
               startIcon={<UploadFileIcon />}
             >
-              Selecionar Imagem do Mapa
+              Selecionar Imagem do Mapa (Opcional)
               <input
                 type="file"
                 hidden
