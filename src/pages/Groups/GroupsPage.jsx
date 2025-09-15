@@ -1,4 +1,3 @@
-// src/pages/Groups/GroupsPage.jsx
 import React, { useState, useMemo } from 'react';
 import toast from 'react-hot-toast';
 import { useGroups } from '../../hooks/useGroups';
@@ -6,17 +5,19 @@ import { useTerritories } from '../../hooks/useTerritories';
 import {
   Box, Typography, Card, CardContent, TextField, Button, Grid,
   CircularProgress, List, ListItem, ListItemText, Checkbox, Paper,
-  Tooltip, IconButton, Divider, Chip, Stack, ListItemButton
+  Tooltip, IconButton, Divider, Chip, Stack, ListItemButton, Menu, MenuItem // 1. Importar Menu e MenuItem
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import SettingsIcon from '@mui/icons-material/Settings';
 import DeleteIcon from '@mui/icons-material/Delete';
-import CustomModal from '../../components/ui/CustomModal'; // 1. Importar o CustomModal
+import MoreVertIcon from '@mui/icons-material/MoreVert'; // 2. Importar o ícone de "três pontos"
+import CustomModal from '../../components/ui/CustomModal';
 
 const GroupsPage = () => {
   const { groups, loading: loadingGroups, createGroup, updateGroupName, associateTerritories, deleteGroup } = useGroups();
   const { territories: allTerritories, loading: loadingTerritories } = useTerritories();
 
+  // Estados existentes...
   const [newGroupName, setNewGroupName] = useState('');
   const [isAssociating, setIsAssociating] = useState(false);
   const [editingGroup, setEditingGroup] = useState(null);
@@ -25,7 +26,22 @@ const GroupsPage = () => {
   const [newEditedName, setNewEditedName] = useState('');
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [groupToDelete, setGroupToDelete] = useState(null);
+  
+  // 3. Estados para controlar o Menu de Ações
+  const [menuAnchorEl, setMenuAnchorEl] = useState(null);
+  const [currentGroupForMenu, setCurrentGroupForMenu] = useState(null);
 
+  const handleMenuOpen = (event, group) => {
+    setMenuAnchorEl(event.currentTarget);
+    setCurrentGroupForMenu(group);
+  };
+
+  const handleMenuClose = () => {
+    setMenuAnchorEl(null);
+    setCurrentGroupForMenu(null);
+  };
+  
+  // Funções de manipulação (handlers) existentes...
   const handleCreateGroup = async (e) => {
     e.preventDefault();
     if (!newGroupName.trim()) return toast.error('O nome do grupo não pode ser vazio.');
@@ -34,6 +50,7 @@ const GroupsPage = () => {
   };
 
   const handleOpenEditNameModal = (grupo) => {
+    handleMenuClose();
     setEditingGroup(grupo);
     setNewEditedName(grupo.nome);
     setIsEditNameModalOpen(true);
@@ -46,6 +63,7 @@ const GroupsPage = () => {
   };
 
   const handleEditAssociationsClick = (grupo) => {
+    handleMenuClose();
     setEditingGroup(grupo);
     setCheckedTerritories(new Set(grupo.territorio_ids || []));
     setIsAssociating(true);
@@ -64,6 +82,7 @@ const GroupsPage = () => {
   };
 
   const handleDeleteClick = (group) => {
+    handleMenuClose();
     setGroupToDelete(group);
     setIsConfirmOpen(true);
   };
@@ -97,7 +116,8 @@ const GroupsPage = () => {
       <Card sx={{ mb: 4 }}>
         <CardContent>
           <Typography variant="h6">Criar Novo Grupo</Typography>
-          <Box component="form" sx={{ display: 'flex', gap: 2, mt: 2 }} onSubmit={handleCreateGroup}>
+          {/* MELHORIA 1: Formulário de criação agora é responsivo */}
+          <Box component="form" sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 2, mt: 2 }} onSubmit={handleCreateGroup}>
             <TextField label="Nome do Grupo" variant="outlined" size="small" fullWidth value={newGroupName} onChange={(e) => setNewGroupName(e.target.value)} />
             <Button type="submit" variant="contained">Criar</Button>
           </Box>
@@ -113,12 +133,12 @@ const GroupsPage = () => {
               <Card sx={{ height: '100%' }}>
                 <CardContent>
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-                    <Stack direction="row" spacing={2} alignItems="center">
-                      <Typography variant="h5">{grupo.nome}</Typography>
-                      <Tooltip title="Editar nome do grupo"><IconButton size="small" onClick={() => handleOpenEditNameModal(grupo)}><EditIcon fontSize="small" /></IconButton></Tooltip>
-                      <Tooltip title="Excluir grupo"><IconButton size="small" onClick={() => handleDeleteClick(grupo)}><DeleteIcon fontSize="small" /></IconButton></Tooltip>
-                      <Tooltip title="Associar Territórios"><IconButton size="small" onClick={() => handleEditAssociationsClick(grupo)}><SettingsIcon /></IconButton></Tooltip>
-                    </Stack>
+                    <Typography variant="h5">{grupo.nome}</Typography>
+                    
+                    {/* MELHORIA 2: Botões de ação consolidados em um Menu */}
+                    <IconButton onClick={(e) => handleMenuOpen(e, grupo)}>
+                      <MoreVertIcon />
+                    </IconButton>
                   </Box>
                   <Divider />
                   <Box sx={{ p: 2 }}>
@@ -136,7 +156,27 @@ const GroupsPage = () => {
         })}
       </Grid>
       
-      {/* 2. Modal de Associação de Territórios refatorado */}
+      {/* 4. Menu de Ações para os cards de grupo */}
+      <Menu
+        anchorEl={menuAnchorEl}
+        open={Boolean(menuAnchorEl)}
+        onClose={handleMenuClose}
+      >
+        <MenuItem onClick={() => handleOpenEditNameModal(currentGroupForMenu)}>
+          <ListItemIcon><EditIcon fontSize="small" /></ListItemIcon>
+          <ListItemText>Editar Nome</ListItemText>
+        </MenuItem>
+        <MenuItem onClick={() => handleEditAssociationsClick(currentGroupForMenu)}>
+          <ListItemIcon><SettingsIcon fontSize="small" /></ListItemIcon>
+          <ListItemText>Associar Territórios</ListItemText>
+        </MenuItem>
+        <MenuItem onClick={() => handleDeleteClick(currentGroupForMenu)} sx={{ color: 'error.main' }}>
+          <ListItemIcon><DeleteIcon fontSize="small" color="error" /></ListItemIcon>
+          <ListItemText>Excluir Grupo</ListItemText>
+        </MenuItem>
+      </Menu>
+
+      {/* Modals existentes... */}
       {editingGroup && (
         <CustomModal
           open={isAssociating}
@@ -160,7 +200,6 @@ const GroupsPage = () => {
         </CustomModal>
       )}
 
-      {/* 3. Modal para Editar Nome do Grupo refatorado */}
       {editingGroup && (
         <CustomModal
           open={isEditNameModalOpen}
@@ -182,7 +221,6 @@ const GroupsPage = () => {
         </CustomModal>
       )}
 
-      {/* 4. Modal de Confirmação de Exclusão refatorado */}
       <CustomModal
         open={isConfirmOpen}
         onClose={() => setIsConfirmOpen(false)}

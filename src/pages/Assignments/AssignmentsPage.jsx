@@ -1,4 +1,3 @@
-// src/pages/Assignments/AssignmentsPage.jsx
 import React, { useState } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
@@ -15,107 +14,107 @@ import { useCampaigns } from '../../hooks/useCampaigns';
 
 const AssignmentsPage = () => {
   const { territories, loading, fetchTerritories, searchTerm, setSearchTerm, statusFilter, setStatusFilter, sortBy, setSortBy, notWorkedInCampaignId, setNotWorkedInCampaignId } = useTerritories();
-  const { persons } = usePersons(); // Busca a lista de pessoas do contexto
-    const { activeCampaigns } = useCampaigns();
+  const { persons } = usePersons();
+  const { activeCampaigns } = useCampaigns();
 
-  // Estados locais para controle da UI
   const [selectedPessoa, setSelectedPessoa] = useState({});
   const [selectedCampaign, setSelectedCampaign] = useState({});
   const [isMapModalOpen, setIsMapModalOpen] = useState(false);
   const [viewingMap, setViewingMap] = useState({ numero: '', url: '' });
 
-  // Ações de designar/devolver
   const handlePessoaSelect = (territorioId, pessoaId) => setSelectedPessoa(prev => ({ ...prev, [territorioId]: pessoaId }));
 
-const API_URL = import.meta.env.VITE_API_URL;
+  const API_URL = import.meta.env.VITE_API_URL;
 
-const handleAssign = async (territorioId) => {
-  const pessoaId = selectedPessoa[territorioId];
-  if (!pessoaId) return toast.error('Por favor, selecione um dirigente.');
+  const handleAssign = async (territorioId) => {
+    const pessoaId = selectedPessoa[territorioId];
+    if (!pessoaId) return toast.error('Por favor, selecione um dirigente.');
 
-  const campanhaId = selectedCampaign[territorioId] || null; // Pega a campanha ou null
+    const campanhaId = selectedCampaign[territorioId] || null;
 
-  try {
-    await axios.post(`${API_URL}/designacoes`, {
-      territorio_id: territorioId,
-      pessoa_id: pessoaId,
-      data_saida: new Date().toISOString().split('T')[0],
-      campanha_id: campanhaId // <<< ENVIA O ID DA CAMPANHA
-    });
-    toast.success('Território designado com sucesso!');
-    fetchTerritories();
-  } catch (error) { 
-    toast.error(error.response?.data?.error || 'Falha ao designar território.'); 
-  }
-};
+    try {
+      await axios.post(`${API_URL}/designacoes`, {
+        territorio_id: territorioId,
+        pessoa_id: pessoaId,
+        data_saida: new Date().toISOString().split('T')[0],
+        campanha_id: campanhaId
+      });
+      toast.success('Território designado com sucesso!');
+      fetchTerritories();
+    } catch (error) {
+      toast.error(error.response?.data?.error || 'Falha ao designar território.');
+    }
+  };
 
-const handleReturn = async (territorioId) => {
-  try {
-    await axios.put(`${API_URL}/designacoes/devolver`, {
-      territorio_id: territorioId,
-      data_devolucao: new Date().toISOString().split('T')[0]
-    });
-    toast.success('Território devolvido com sucesso!');
-    fetchTerritories();
-  } catch (error) { 
-    toast.error(error.response?.data?.error || 'Falha ao devolver território.'); 
-  }
-};
+  const handleReturn = async (territorioId) => {
+    try {
+      await axios.put(`${API_URL}/designacoes/devolver`, {
+        territorio_id: territorioId,
+        data_devolucao: new Date().toISOString().split('T')[0]
+      });
+      toast.success('Território devolvido com sucesso!');
+      fetchTerritories();
+    } catch (error) {
+      toast.error(error.response?.data?.error || 'Falha ao devolver território.');
+    }
+  };
 
-  // Funções do Modal de Mapa
   const handleViewMapClick = (territorio) => {
     setViewingMap({ numero: territorio.numero, url: territorio.url_imagem });
     setIsMapModalOpen(true);
   };
+
   const handleCloseMapModal = () => setIsMapModalOpen(false);
 
   return (
     <Box>
       <Typography variant="h4" component="h1" gutterBottom>Designar Territórios</Typography>
-      
+
       <Card sx={{ p: 2, mb: 4 }}>
         <Typography variant="h6" gutterBottom>Filtros e Ordenação</Typography>
+        {/* CÓDIGO CORRIGIDO ABAIXO */}
         <Grid container spacing={2} alignItems="center">
-  <Grid size={{ xs: 12, md: 2 }}>
-    <TextField
-      fullWidth
-      label="Buscar..."
-      variant="outlined"
-      size="small"
-      value={searchTerm}
-      onChange={(e) => setSearchTerm(e.target.value)}
-    />
-  </Grid>
+          <Grid item xs={12} md={2}>
+            <TextField
+              fullWidth
+              label="Buscar..."
+              variant="outlined"
+              size="small"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </Grid>
 
-  <Grid size={{ xs: 12, sm: 6, md: 2 }}>
-    <FormControl fullWidth size="small">
-      <InputLabel>Status</InputLabel>
-      <Select
-        value={statusFilter}
-        label="Status"
-        onChange={(e) => setStatusFilter(e.target.value)}
-      >
-        <MenuItem value="">Todos</MenuItem>
-        <MenuItem value="Disponível">Disponíveis</MenuItem>
-        <MenuItem value="Em campo">Em Campo</MenuItem>
-      </Select>
-    </FormControl>
-  </Grid>
+          <Grid item xs={12} sm={6} md={2}>
+            <FormControl fullWidth size="small">
+              <InputLabel>Status</InputLabel>
+              <Select
+                value={statusFilter}
+                label="Status"
+                onChange={(e) => setStatusFilter(e.target.value)}
+              >
+                <MenuItem value="">Todos</MenuItem>
+                <MenuItem value="Disponível">Disponíveis</MenuItem>
+                <MenuItem value="Em campo">Em Campo</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
 
-  <Grid size={{ xs: 12, sm: 6, md: 4 }}>
-    <FormControl fullWidth size="small">
-      <InputLabel>Ordenar por</InputLabel>
-      <Select
-        value={sortBy}
-        label="Ordenar por"
-        onChange={(e) => setSortBy(e.target.value)}
-      >
-        <MenuItem value="numero_asc">Número (Crescente)</MenuItem>
-        <MenuItem value="devolucao_desc">Data de Conclusão (Recentes)</MenuItem>
-      </Select>
-    </FormControl>
-  </Grid>
-  <Grid size={{ xs: 12, sm: 6, md: 4 }}>
+          <Grid item xs={12} sm={6} md={4}>
+            <FormControl fullWidth size="small">
+              <InputLabel>Ordenar por</InputLabel>
+              <Select
+                value={sortBy}
+                label="Ordenar por"
+                onChange={(e) => setSortBy(e.target.value)}
+              >
+                <MenuItem value="numero_asc">Número (Crescente)</MenuItem>
+                <MenuItem value="devolucao_desc">Data de Conclusão (Recentes)</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
+
+          <Grid item xs={12} sm={6} md={4}>
             <FormControl fullWidth size="small">
               <InputLabel>Não trabalhado na Campanha</InputLabel>
               <Select
@@ -130,8 +129,7 @@ const handleReturn = async (territorioId) => {
               </Select>
             </FormControl>
           </Grid>
-</Grid>
-
+        </Grid>
       </Card>
 
       {loading ? (
@@ -139,7 +137,8 @@ const handleReturn = async (territorioId) => {
       ) : (
         <Grid container spacing={3}>
           {territories.map((territorio) => (
-            <Grid key={territorio.id} size={{ xs: 12, sm: 6, md: 4, lg: 3 }}>
+            // CÓDIGO CORRIGIDO ABAIXO
+            <Grid item key={territorio.id} xs={12} sm={6} md={4} lg={3}>
               <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
                 <CardHeader
                   action={
@@ -152,7 +151,7 @@ const handleReturn = async (territorioId) => {
                   <Stack spacing={1.5}>
                     <Box><Chip label={territorio.status} color={territorio.status === 'Disponível' ? 'success' : 'warning'} size="small" /></Box>
                     <Typography variant="body2" color="text.secondary">{territorio.descricao}</Typography>
-{territorio.status === 'Em campo' ? (
+                    {territorio.status === 'Em campo' ? (
                       <Box sx={{ background: (theme) => theme.palette.action.hover, p: 1.5, borderRadius: 1 }}>
                         <Typography variant="body2" sx={{ fontWeight: 'bold' }}>Com: {territorio.pessoa_nome}</Typography>
                         {territorio.campanha_titulo && (
@@ -172,61 +171,60 @@ const handleReturn = async (territorioId) => {
                   </Stack>
                 </CardContent>
                 <Divider />
-<CardActions sx={{ p: 2 }}>
-  {territorio.status === 'Disponível' ? (
-    <Box sx={{ width: '100%' }}>
-      <FormControl fullWidth size="small">
-        <InputLabel id={`label-${territorio.id}`}>Designar para...</InputLabel>
-        <Select
-          labelId={`label-${territorio.id}`}
-          label="Designar para..."
-          value={selectedPessoa[territorio.id] || ''}
-          onChange={(e) => handlePessoaSelect(territorio.id, e.target.value)}
-        >
-          {persons.map((p) => (
-            <MenuItem key={p.id} value={p.id}>
-              {p.nome}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
-{activeCampaigns.length > 0 && (
-                     <FormControl sx={{ mt: 2 }} fullWidth size="small">
-                        <InputLabel>Designar na Campanha</InputLabel>
+                <CardActions sx={{ p: 2 }}>
+                  {territorio.status === 'Disponível' ? (
+                    <Box sx={{ width: '100%' }}>
+                      <FormControl fullWidth size="small">
+                        <InputLabel id={`label-${territorio.id}`}>Designar para...</InputLabel>
                         <Select
-                          value={selectedCampaign[territorio.id] || ''}
-                          label="Designar na Campanha"
-                          onChange={(e) => setSelectedCampaign(prev => ({ ...prev, [territorio.id]: e.target.value }))}
+                          labelId={`label-${territorio.id}`}
+                          label="Designar para..."
+                          value={selectedPessoa[territorio.id] || ''}
+                          onChange={(e) => handlePessoaSelect(territorio.id, e.target.value)}
                         >
-                          <MenuItem value="">Nenhuma</MenuItem>
-                          {activeCampaigns.map(c => (
-                            <MenuItem key={c.id} value={c.id}>{c.titulo}</MenuItem>
+                          {persons.map((p) => (
+                            <MenuItem key={p.id} value={p.id}>
+                              {p.nome}
+                            </MenuItem>
                           ))}
                         </Select>
                       </FormControl>
+                      {activeCampaigns.length > 0 && (
+                        <FormControl sx={{ mt: 2 }} fullWidth size="small">
+                          <InputLabel>Designar na Campanha</InputLabel>
+                          <Select
+                            value={selectedCampaign[territorio.id] || ''}
+                            label="Designar na Campanha"
+                            onChange={(e) => setSelectedCampaign(prev => ({ ...prev, [territorio.id]: e.target.value }))}
+                          >
+                            <MenuItem value="">Nenhuma</MenuItem>
+                            {activeCampaigns.map(c => (
+                              <MenuItem key={c.id} value={c.id}>{c.titulo}</MenuItem>
+                            ))}
+                          </Select>
+                        </FormControl>
+                      )}
+                      <Button
+                        fullWidth
+                        variant="contained"
+                        size="small"
+                        sx={{ mt: 2 }}
+                        onClick={() => handleAssign(territorio.id)}
+                      >
+                        Designar
+                      </Button>
+                    </Box>
+                  ) : (
+                    <Button
+                      fullWidth
+                      variant="outlined"
+                      size="small"
+                      onClick={() => handleReturn(territorio.id)}
+                    >
+                      Devolver
+                    </Button>
                   )}
-      <Button
-        fullWidth
-        variant="contained"
-        size="small"
-        sx={{ mt: 2 }}
-        onClick={() => handleAssign(territorio.id)}
-      >
-        Designar
-      </Button>
-    </Box>
-  ) : (
-    <Button
-      fullWidth
-      variant="outlined"
-      size="small"
-      onClick={() => handleReturn(territorio.id)}
-    >
-      Devolver
-    </Button>
-  )}
-</CardActions>
-
+                </CardActions>
               </Card>
             </Grid>
           ))}
@@ -234,19 +232,19 @@ const handleReturn = async (territorioId) => {
       )}
 
       {/* Modal de Mapa */}
-<Dialog open={isMapModalOpen} onClose={handleCloseMapModal} maxWidth="md">
-  <DialogTitle>Mapa do Território Nº: {viewingMap.numero}</DialogTitle>
-  <DialogContent>
-    {viewingMap.url ? (
-      <img src={`${API_URL}/${viewingMap.url}`} alt={`Mapa`} style={{ width: '100%' }} />
-    ) : (
-      <Typography>Nenhuma imagem cadastrada.</Typography>
-    )}
-  </DialogContent>
-  <DialogActions>
-    <Button onClick={handleCloseMapModal}>Fechar</Button>
-  </DialogActions>
-</Dialog>
+      <Dialog open={isMapModalOpen} onClose={handleCloseMapModal} maxWidth="md">
+        <DialogTitle>Mapa do Território Nº: {viewingMap.numero}</DialogTitle>
+        <DialogContent>
+          {viewingMap.url ? (
+            <img src={`${API_URL}/${viewingMap.url}`} alt={`Mapa`} style={{ width: '100%' }} />
+          ) : (
+            <Typography>Nenhuma imagem cadastrada.</Typography>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseMapModal}>Fechar</Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };

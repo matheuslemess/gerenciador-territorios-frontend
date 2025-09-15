@@ -1,4 +1,3 @@
-// src/pages/Campaigns/CampaignsPage.jsx
 import React, { useState, useEffect } from 'react';
 import { useCampaigns } from '../../hooks/useCampaigns';
 import {
@@ -91,13 +90,13 @@ const CampaignsPage = () => {
       field: 'data_inicio',
       headerName: 'Início',
       width: 130,
-      renderCell: (params) => dayjs(params.value).format('DD/MM/YYYY'),
+      renderCell: (params) => params.value ? dayjs(params.value).format('DD/MM/YYYY') : '',
     },
     {
       field: 'data_fim',
       headerName: 'Fim',
       width: 130,
-      renderCell: (params) => dayjs(params.value).format('DD/MM/YYYY'),
+      renderCell: (params) => params.value ? dayjs(params.value).format('DD/MM/YYYY') : '',
     },
     {
       field: 'actions',
@@ -125,8 +124,16 @@ const CampaignsPage = () => {
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="pt-br">
+      {/* ATUALIZAÇÃO 1: Cabeçalho se torna responsivo */}
       <Box
-        sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}
+        sx={{
+          display: 'flex',
+          flexDirection: { xs: 'column', sm: 'row' }, // Empilha em telas pequenas, fica em linha em telas maiores
+          justifyContent: 'space-between',
+          alignItems: { xs: 'stretch', sm: 'center' }, // Alinhamento ajustado para cada modo
+          mb: 3,
+          gap: 2, // Espaçamento entre os itens (útil quando empilhado)
+        }}
       >
         <Typography variant="h4" component="h1">
           Campanhas
@@ -140,13 +147,16 @@ const CampaignsPage = () => {
         </Button>
       </Box>
 
-      <Box sx={{ height: 'auto', width: '100%' }}>
+      {/* ATUALIZAÇÃO 2: Container da tabela agora permite rolagem horizontal */}
+      <Box sx={{ width: '100%', overflowX: 'auto' }}>
         <DataGrid
           rows={campaigns}
           columns={columns}
           loading={loading}
           autoHeight
           localeText={ptBR.components.MuiDataGrid.defaultProps.localeText}
+          // Garante que a tabela tenha uma largura mínima, forçando a rolagem a aparecer
+          sx={{ minWidth: 700 }}
         />
       </Box>
 

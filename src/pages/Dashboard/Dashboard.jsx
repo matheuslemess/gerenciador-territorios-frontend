@@ -1,10 +1,8 @@
-// src/pages/Dashboard/Dashboard.jsx
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDashboard } from '../../hooks/useDashboard';
 import { useTerritories } from '../../hooks/useTerritories';
-import { useCampaigns } from '../../hooks/useCampaigns'; // 1. IMPORTAR O HOOK DE CAMPANHAS
+import { useCampaigns } from '../../hooks/useCampaigns';
 import {
   Box,
   Card,
@@ -19,7 +17,7 @@ import {
   Divider,
   Stack,
   CardContent,
-  LinearProgress, // Importar para a barra de progresso
+  LinearProgress,
 } from '@mui/material';
 import PublicIcon from '@mui/icons-material/Public';
 import ExploreIcon from '@mui/icons-material/Explore';
@@ -34,14 +32,13 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const { stats, loading: dashboardLoading } = useDashboard();
   const { setSearchTerm } = useTerritories();
-  const { activeCampaigns, loading: campaignsLoading } = useCampaigns(); // 2. USAR O HOOK DE CAMPANHAS
+  const { activeCampaigns, loading: campaignsLoading } = useCampaigns();
 
   const handleNavigateAndSearch = (numeroTerritorio) => {
     setSearchTerm(numeroTerritorio.numero);
     navigate('/designacoes');
   };
   
-  // Define a campanha atual como a primeira da lista de ativas
   const currentCampaign = activeCampaigns?.[0];
 
   if (dashboardLoading || campaignsLoading) {
@@ -63,40 +60,39 @@ const Dashboard = () => {
   return (
     <Stack spacing={4}>
       
-      {/* 3. RENDERIZAÇÃO CONDICIONAL DO NOVO CARD DE CAMPANHA */}
       {currentCampaign && <CampaignProgressCard campaign={currentCampaign} />}
 
-      {/* --- CARD ÚNICO COM OS 3 INDICADORES (KPIs) --- */}
       <Card variant="outlined">
         <CardHeader title="Visão Geral dos Territórios"/>
         <Divider />
-<Grid container spacing={3} justifyContent="space-around">
-  <Grid size={{ xs: 12, sm: 4 }}>
-    <KPICard
-      title="Total de Territórios"
-      value={counts.total}
-      icon={<PublicIcon fontSize="large" color="primary" />}
-    />
-  </Grid>
-  <Grid size={{ xs: 12, sm: 4 }}>
-    <KPICard
-      title="Em Campo"
-      value={counts.em_campo}
-      icon={<ExploreIcon fontSize="large" color="warning" />}
-    />
-  </Grid>
-  <Grid size={{ xs: 12, sm: 4 }}>
-    <KPICard
-      title="Disponíveis"
-      value={counts.disponivel}
-      icon={<CheckCircleOutlineIcon fontSize="large" color="success" />}
-    />
-  </Grid>
-</Grid>
+        <Grid container spacing={3} justifyContent="space-around">
+          {/* ATUALIZAÇÃO 1: Corrigido 'size' para 'item' e os breakpoints */}
+          <Grid item xs={12} sm={4}>
+            <KPICard
+              title="Total de Territórios"
+              value={counts.total}
+              icon={<PublicIcon fontSize="large" color="primary" />}
+            />
+          </Grid>
+          {/* ATUALIZAÇÃO 1: Corrigido 'size' para 'item' e os breakpoints */}
+          <Grid item xs={12} sm={4}>
+            <KPICard
+              title="Em Campo"
+              value={counts.em_campo}
+              icon={<ExploreIcon fontSize="large" color="warning" />}
+            />
+          </Grid>
+          {/* ATUALIZAÇÃO 1: Corrigido 'size' para 'item' e os breakpoints */}
+          <Grid item xs={12} sm={4}>
+            <KPICard
+              title="Disponíveis"
+              value={counts.disponivel}
+              icon={<CheckCircleOutlineIcon fontSize="large" color="success" />}
+            />
+          </Grid>
+        </Grid>
       </Card>
 
-
-      {/* --- LISTAS DE AÇÕES --- */}
       <ActionList
         title={`Territórios Atrasados (${overdueTerritories.length})`}
         items={overdueTerritories}
@@ -122,7 +118,6 @@ const Dashboard = () => {
 
 // --- NOVOS E ANTIGOS COMPONENTES AUXILIARES ---
 
-// 4. NOVO COMPONENTE PARA O CARD DE CAMPANHA
 const CampaignProgressCard = ({ campaign }) => {
   const trabalhados = parseInt(campaign.trabalhados_count, 10);
   const total = parseInt(campaign.total_territorios, 10);
@@ -154,16 +149,18 @@ const CampaignProgressCard = ({ campaign }) => {
             },
           }}
         />
-<Grid container sx={{ mt: 2, textAlign: 'center' }}>
-  <Grid size={{ xs: 6 }} sx={{ borderRight: '1px solid rgba(255, 255, 255, 0.3)' }}>
-    <Typography variant="h5" sx={{ fontWeight: 'bold' }}>{trabalhados}</Typography>
-    <Typography variant="caption" sx={{ px: 1 }}>Trabalhados</Typography>
-  </Grid>
-  <Grid size={{ xs: 6 }}>
-    <Typography variant="h5" sx={{ fontWeight: 'bold' }}>{faltam}</Typography>
-    <Typography variant="caption" sx={{ px: 1 }}>Faltam</Typography>
-  </Grid>
-</Grid>
+        <Grid container sx={{ mt: 2, textAlign: 'center' }}>
+          {/* ATUALIZAÇÃO 2: Corrigido 'size' para 'item' */}
+          <Grid item xs={6} sx={{ borderRight: '1px solid rgba(255, 255, 255, 0.3)' }}>
+            <Typography variant="h5" sx={{ fontWeight: 'bold' }}>{trabalhados}</Typography>
+            <Typography variant="caption" sx={{ px: 1 }}>Trabalhados</Typography>
+          </Grid>
+          {/* ATUALIZAÇÃO 2: Corrigido 'size' para 'item' */}
+          <Grid item xs={6}>
+            <Typography variant="h5" sx={{ fontWeight: 'bold' }}>{faltam}</Typography>
+            <Typography variant="caption" sx={{ px: 1 }}>Faltam</Typography>
+          </Grid>
+        </Grid>
       </CardContent>
     </Card>
   );
@@ -199,14 +196,10 @@ const ActionList = ({ title, items, icon, primaryText, secondaryText, emptyText,
   </Card>
 );
 
-// --- COMPONENTE DE SKELETON ATUALIZADO ---
 const DashboardSkeleton = () => (
   <Stack spacing={4} sx={{ maxWidth: 1200, margin: '0 auto', px: { xs: 1, sm: 2, md: 3 }, py: 3 }}>
-    {/* Skeleton para o card de campanha */}
     <Skeleton variant="rounded" height={160} />
-    {/* Skeleton para os KPIs */}
     <Skeleton variant="rounded" height={100} />
-    {/* Skeletons para as listas */}
     <Skeleton variant="rounded" height={200} />
     <Skeleton variant="rounded" height={200} />
   </Stack>

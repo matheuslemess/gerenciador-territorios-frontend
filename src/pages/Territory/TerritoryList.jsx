@@ -6,22 +6,20 @@ import { useTerritories } from '../../hooks/useTerritories';
 import { Box, IconButton, Tooltip, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Button, TextField, Typography } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import MapIcon from '@mui/icons-material/Map'; // Ícone do Mapa importado
+import MapIcon from '@mui/icons-material/Map';
 import { DataGrid } from '@mui/x-data-grid';
 import { ptBR } from '@mui/x-data-grid/locales';
 
 const TerritoryList = () => {
   const { territories, loading, fetchTerritories } = useTerritories();
 
-  // Estados dos modais
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editingTerritory, setEditingTerritory] = useState(null);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [territoryToDelete, setTerritoryToDelete] = useState(null);
-  const [isMapModalOpen, setIsMapModalOpen] = useState(false); // Estado para o modal do mapa
-  const [viewingMap, setViewingMap] = useState({ numero: '', url: '' }); // Estado para guardar info do mapa
+  const [isMapModalOpen, setIsMapModalOpen] = useState(false);
+  const [viewingMap, setViewingMap] = useState({ numero: '', url: '' });
 
-  // Funções de Ação (Editar/Deletar)
   const handleEditClick = (territory) => {
     setEditingTerritory(territory);
     setIsEditModalOpen(true);
@@ -31,36 +29,37 @@ const TerritoryList = () => {
     setTerritoryToDelete(territoryId);
     setIsConfirmOpen(true);
   };
+  
   const API_URL = import.meta.env.VITE_API_URL;
 
-const handleConfirmDelete = async () => {
-  if (!territoryToDelete) return;
-  try {
-    await axios.delete(`${API_URL}/territorios/${territoryToDelete}`);
-    toast.success('Território excluído com sucesso!');
-    fetchTerritories();
-  } catch (error) {
-    toast.error(error.response?.data?.error || 'Falha ao excluir território.');
-  } finally {
-    setIsConfirmOpen(false);
-    setTerritoryToDelete(null);
-  }
-};
+  const handleConfirmDelete = async () => {
+    if (!territoryToDelete) return;
+    try {
+      await axios.delete(`${API_URL}/territorios/${territoryToDelete}`);
+      toast.success('Território excluído com sucesso!');
+      fetchTerritories();
+    } catch (error) {
+      toast.error(error.response?.data?.error || 'Falha ao excluir território.');
+    } finally {
+      setIsConfirmOpen(false);
+      setTerritoryToDelete(null);
+    }
+  };
 
-const handleSaveEdit = async () => {
-  if (!editingTerritory) return;
-  try {
-    await axios.put(`${API_URL}/territorios/${editingTerritory.id}`, {
-      numero: editingTerritory.numero,
-      descricao: editingTerritory.descricao,
-    });
-    toast.success('Território atualizado com sucesso!');
-    handleCloseEditModal();
-    fetchTerritories();
-  } catch (error) {
-    toast.error(error.response?.data?.error || 'Falha ao atualizar território.');
-  }
-};
+  const handleSaveEdit = async () => {
+    if (!editingTerritory) return;
+    try {
+      await axios.put(`${API_URL}/territorios/${editingTerritory.id}`, {
+        numero: editingTerritory.numero,
+        descricao: editingTerritory.descricao,
+      });
+      toast.success('Território atualizado com sucesso!');
+      handleCloseEditModal();
+      fetchTerritories();
+    } catch (error) {
+      toast.error(error.response?.data?.error || 'Falha ao atualizar território.');
+    }
+  };
 
   const handleFieldChange = (event) => setEditingTerritory({ ...editingTerritory, [event.target.name]: event.target.value });
   const handleCloseEditModal = () => {
@@ -68,13 +67,12 @@ const handleSaveEdit = async () => {
     setEditingTerritory(null);
   };
 
-  // Funções para o Modal do Mapa
   const handleViewMapClick = (territorio) => {
     setViewingMap({ numero: territorio.numero, url: territorio.url_imagem });
     setIsMapModalOpen(true);
   };
+  
   const handleCloseMapModal = () => setIsMapModalOpen(false);
-
 
   const columns = [
     { field: 'numero', headerName: 'Número', width: 100 },
@@ -85,12 +83,11 @@ const handleSaveEdit = async () => {
       headerName: 'Ações',
       sortable: false,
       filterable: false,
-      width: 150, // Aumentei a largura para caber o novo ícone
+      width: 150,
       align: 'center',
       headerAlign: 'center',
       renderCell: (params) => (
         <Box>
-          {/* BOTÃO DO MAPA ADICIONADO AQUI */}
           <Tooltip title="Ver Mapa">
             <IconButton onClick={() => handleViewMapClick(params.row)}>
               <MapIcon />
@@ -113,7 +110,8 @@ const handleSaveEdit = async () => {
 
   return (
     <>
-      <Box sx={{ height: 'auto', width: '100%' }}>
+      {/* MELHORIA 2: Container da tabela com rolagem horizontal */}
+      <Box sx={{ width: '100%', overflowX: 'auto' }}>
         <DataGrid
           rows={territories}
           columns={columns}
@@ -123,6 +121,8 @@ const handleSaveEdit = async () => {
           initialState={{ pagination: { paginationModel: { pageSize: 10 } } }}
           pageSizeOptions={[10, 25, 50]}
            sx={{
+            // Largura mínima para garantir que a rolagem funcione bem
+            minWidth: 650,
             '& .MuiDataGrid-cell:focus, & .MuiDataGrid-cell:focus-within': {
               outline: 'none !important',
             },
@@ -135,7 +135,7 @@ const handleSaveEdit = async () => {
         <DialogTitle>Editar Território</DialogTitle>
         <DialogContent>
           <TextField autoFocus margin="dense" name="numero" label="Número" type="text" fullWidth variant="outlined" value={editingTerritory?.numero || ''} onChange={handleFieldChange} sx={{ mb: 2, mt: 1 }} />
-          <TextField autoFocus margin="dense" name="descricao" label="Descrição" type="text" fullWidth variant="outlined" value={editingTerritory?.descricao || ''} onChange={handleFieldChange} />
+          <TextField margin="dense" name="descricao" label="Descrição" type="text" fullWidth variant="outlined" value={editingTerritory?.descricao || ''} onChange={handleFieldChange} />
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCloseEditModal}>Cancelar</Button>
@@ -153,24 +153,24 @@ const handleSaveEdit = async () => {
         </DialogActions>
       </Dialog>
 
-      {/* MODAL DO MAPA ADICIONADO AQUI */}
-<Dialog open={isMapModalOpen} onClose={handleCloseMapModal} maxWidth="md">
-  <DialogTitle>Mapa do Território Nº: {viewingMap.numero}</DialogTitle>
-  <DialogContent>
-    {viewingMap.url ? (
-      <img 
-        src={`${API_URL}/${viewingMap.url}`} 
-        alt={`Mapa do Território ${viewingMap.numero}`} 
-        style={{ width: '100%', height: 'auto' }} 
-      />
-    ) : (
-      <Typography>Nenhuma imagem de mapa cadastrada para este território.</Typography>
-    )}
-  </DialogContent>
-  <DialogActions>
-    <Button onClick={handleCloseMapModal}>Fechar</Button>
-  </DialogActions>
-</Dialog>
+      {/* Modal do Mapa */}
+      <Dialog open={isMapModalOpen} onClose={handleCloseMapModal} maxWidth="md">
+        <DialogTitle>Mapa do Território Nº: {viewingMap.numero}</DialogTitle>
+        <DialogContent>
+          {viewingMap.url ? (
+            <img 
+              src={`${API_URL}/${viewingMap.url}`} 
+              alt={`Mapa do Território ${viewingMap.numero}`} 
+              style={{ width: '100%', height: 'auto' }} 
+            />
+          ) : (
+            <Typography>Nenhuma imagem de mapa cadastrada para este território.</Typography>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseMapModal}>Fechar</Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 };

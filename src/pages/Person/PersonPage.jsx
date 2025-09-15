@@ -1,4 +1,3 @@
-// src/pages/Person/PersonPage.jsx
 import React, { useState } from 'react';
 import { Box, Divider, Typography, Button } from '@mui/material';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
@@ -12,7 +11,6 @@ export default function PersonPage() {
   const handleOpenModal = () => setIsModalOpen(true);
   const handleCloseModal = () => setIsModalOpen(false);
 
-  // dispara o form de dentro do modal quando clicar em "Salvar"
   const handleConfirm = () => {
     const form = document.getElementById('add-person-form');
     if (form) form.requestSubmit();
@@ -20,8 +18,15 @@ export default function PersonPage() {
 
   return (
     <Box>
-      {/* Header com botão Novo Dirigente */}
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+      {/* MELHORIA 1: Cabeçalho agora é responsivo */}
+      <Box sx={{
+        display: 'flex',
+        flexDirection: { xs: 'column', sm: 'row' }, // Empilha no celular
+        justifyContent: 'space-between',
+        alignItems: { xs: 'stretch', sm: 'center' }, // Alinhamento ajustado
+        mb: 3,
+        gap: 2, // Espaçamento para quando empilhar
+      }}>
         <Typography variant="h4" component="h1">
           Gerenciar Dirigentes
         </Typography>
@@ -29,16 +34,16 @@ export default function PersonPage() {
           variant="contained"
           startIcon={<AddCircleOutlineIcon />}
           onClick={handleOpenModal}
+          // Botão ocupa toda a largura no celular para melhor toque
+          sx={{ width: { xs: '100%', sm: 'auto' } }}
         >
           Novo Dirigente
         </Button>
       </Box>
 
-      {/* Lista */}
       <Divider sx={{ my: 2 }} />
       <PersonList />
 
-      {/* Modal padronizado */}
       <CustomModal
         open={isModalOpen}
         onClose={handleCloseModal}
