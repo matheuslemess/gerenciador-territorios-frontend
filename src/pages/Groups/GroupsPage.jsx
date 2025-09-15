@@ -5,19 +5,20 @@ import { useTerritories } from '../../hooks/useTerritories';
 import {
   Box, Typography, Card, CardContent, TextField, Button, Grid,
   CircularProgress, List, ListItem, ListItemText, Checkbox, Paper,
-  Tooltip, IconButton, Divider, Chip, Stack, ListItemButton, Menu, MenuItem // 1. Importar Menu e MenuItem
+  Tooltip, IconButton, Divider, Chip, Stack, ListItemButton, Menu, MenuItem,
+  ListItemIcon
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import SettingsIcon from '@mui/icons-material/Settings';
 import DeleteIcon from '@mui/icons-material/Delete';
-import MoreVertIcon from '@mui/icons-material/MoreVert'; // 2. Importar o ícone de "três pontos"
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 import CustomModal from '../../components/ui/CustomModal';
 
 const GroupsPage = () => {
   const { groups, loading: loadingGroups, createGroup, updateGroupName, associateTerritories, deleteGroup } = useGroups();
   const { territories: allTerritories, loading: loadingTerritories } = useTerritories();
 
-  // Estados existentes...
+  // Estados
   const [newGroupName, setNewGroupName] = useState('');
   const [isAssociating, setIsAssociating] = useState(false);
   const [editingGroup, setEditingGroup] = useState(null);
@@ -27,7 +28,6 @@ const GroupsPage = () => {
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [groupToDelete, setGroupToDelete] = useState(null);
   
-  // 3. Estados para controlar o Menu de Ações
   const [menuAnchorEl, setMenuAnchorEl] = useState(null);
   const [currentGroupForMenu, setCurrentGroupForMenu] = useState(null);
 
@@ -41,7 +41,7 @@ const GroupsPage = () => {
     setCurrentGroupForMenu(null);
   };
   
-  // Funções de manipulação (handlers) existentes...
+  // Handlers
   const handleCreateGroup = async (e) => {
     e.preventDefault();
     if (!newGroupName.trim()) return toast.error('O nome do grupo não pode ser vazio.');
@@ -116,7 +116,6 @@ const GroupsPage = () => {
       <Card sx={{ mb: 4 }}>
         <CardContent>
           <Typography variant="h6">Criar Novo Grupo</Typography>
-          {/* MELHORIA 1: Formulário de criação agora é responsivo */}
           <Box component="form" sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 2, mt: 2 }} onSubmit={handleCreateGroup}>
             <TextField label="Nome do Grupo" variant="outlined" size="small" fullWidth value={newGroupName} onChange={(e) => setNewGroupName(e.target.value)} />
             <Button type="submit" variant="contained">Criar</Button>
@@ -125,38 +124,36 @@ const GroupsPage = () => {
       </Card>
       
       <Typography variant="h5" gutterBottom>Grupos Existentes</Typography>
-      <Grid container spacing={3}>
+      
+      {/* ALTERAÇÃO AQUI: Trocamos o Grid pelo Stack para criar a lista vertical */}
+      <Stack spacing={2}>
         {groups.map(grupo => {
           const territoriesInGroup = allTerritories.filter(t => (grupo.territorio_ids || []).includes(t.id));
           return (
-            <Grid key={grupo.id} item xs={12} md={6}>
-              <Card sx={{ height: '100%' }}>
-                <CardContent>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-                    <Typography variant="h5">{grupo.nome}</Typography>
-                    
-                    {/* MELHORIA 2: Botões de ação consolidados em um Menu */}
-                    <IconButton onClick={(e) => handleMenuOpen(e, grupo)}>
-                      <MoreVertIcon />
-                    </IconButton>
-                  </Box>
-                  <Divider />
-                  <Box sx={{ p: 2 }}>
-                    <Typography variant="subtitle2" sx={{ mb: 1 }}>Territórios ({territoriesInGroup.length}):</Typography>
-                    {territoriesInGroup.length > 0 ? (
-                      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                        {territoriesInGroup.map(t => <Chip key={t.id} label={t.numero} size="small" />)}
-                      </Box>
-                    ) : ( <Typography variant="body2" color="text.secondary">Nenhum território associado.</Typography> )}
-                  </Box>
-                </CardContent>
-              </Card>
-            </Grid>
+            // O <Grid item> foi removido
+            <Card key={grupo.id}>
+              <CardContent>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+                  <Typography variant="h5">{grupo.nome}</Typography>
+                  <IconButton onClick={(e) => handleMenuOpen(e, grupo)}>
+                    <MoreVertIcon />
+                  </IconButton>
+                </Box>
+                <Divider />
+                <Box sx={{ p: 2 }}>
+                  <Typography variant="subtitle2" sx={{ mb: 1 }}>Territórios ({territoriesInGroup.length}):</Typography>
+                  {territoriesInGroup.length > 0 ? (
+                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                      {territoriesInGroup.sort((a, b) => parseInt(a.numero) - parseInt(b.numero)).map(t => <Chip key={t.id} label={t.numero} size="small" />)}
+                    </Box>
+                  ) : ( <Typography variant="body2" color="text.secondary">Nenhum território associado.</Typography> )}
+                </Box>
+              </CardContent>
+            </Card>
           )
         })}
-      </Grid>
+      </Stack>
       
-      {/* 4. Menu de Ações para os cards de grupo */}
       <Menu
         anchorEl={menuAnchorEl}
         open={Boolean(menuAnchorEl)}
@@ -176,7 +173,7 @@ const GroupsPage = () => {
         </MenuItem>
       </Menu>
 
-      {/* Modals existentes... */}
+      {/* Modals */}
       {editingGroup && (
         <CustomModal
           open={isAssociating}

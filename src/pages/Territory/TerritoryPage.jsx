@@ -28,7 +28,7 @@ export default function TerritoryPage() {
         mb: 3,
         gap: 2, // Espaçamento para quando empilhar
       }}>
-        <Typography variant="h4" component="h1">Gerenciar Territórios</Typography>
+        <Typography variant="h4"  component="h1">Gerenciar Territórios</Typography>
         <Button
           variant="contained"
           startIcon={<AddCircleOutlineIcon />}

@@ -65,32 +65,30 @@ const Dashboard = () => {
       <Card variant="outlined">
         <CardHeader title="Visão Geral dos Territórios"/>
         <Divider />
-        <Grid container spacing={3} justifyContent="space-around">
-          {/* ATUALIZAÇÃO 1: Corrigido 'size' para 'item' e os breakpoints */}
-          <Grid item xs={12} sm={4}>
-            <KPICard
-              title="Total de Territórios"
-              value={counts.total}
-              icon={<PublicIcon fontSize="large" color="primary" />}
-            />
-          </Grid>
-          {/* ATUALIZAÇÃO 1: Corrigido 'size' para 'item' e os breakpoints */}
-          <Grid item xs={12} sm={4}>
-            <KPICard
-              title="Em Campo"
-              value={counts.em_campo}
-              icon={<ExploreIcon fontSize="large" color="warning" />}
-            />
-          </Grid>
-          {/* ATUALIZAÇÃO 1: Corrigido 'size' para 'item' e os breakpoints */}
-          <Grid item xs={12} sm={4}>
-            <KPICard
-              title="Disponíveis"
-              value={counts.disponivel}
-              icon={<CheckCircleOutlineIcon fontSize="large" color="success" />}
-            />
-          </Grid>
-        </Grid>
+        <Grid container spacing={3} justifyContent="space-around" columns={12}>
+  <Grid size={{ xs: 12, sm: 4 }}>
+    <KPICard
+      title="Total de Territórios"
+      value={counts.total}
+      icon={<PublicIcon fontSize="large" color="primary" />}
+    />
+  </Grid>
+  <Grid size={{ xs: 12, sm: 4 }}>
+    <KPICard
+      title="Em Campo"
+      value={counts.em_campo}
+      icon={<ExploreIcon fontSize="large" color="warning" />}
+    />
+  </Grid>
+  <Grid size={{ xs: 12, sm: 4 }}>
+    <KPICard
+      title="Disponíveis"
+      value={counts.disponivel}
+      icon={<CheckCircleOutlineIcon fontSize="large" color="success" />}
+    />
+  </Grid>
+</Grid>
+
       </Card>
 
       <ActionList
@@ -149,18 +147,17 @@ const CampaignProgressCard = ({ campaign }) => {
             },
           }}
         />
-        <Grid container sx={{ mt: 2, textAlign: 'center' }}>
-          {/* ATUALIZAÇÃO 2: Corrigido 'size' para 'item' */}
-          <Grid item xs={6} sx={{ borderRight: '1px solid rgba(255, 255, 255, 0.3)' }}>
-            <Typography variant="h5" sx={{ fontWeight: 'bold' }}>{trabalhados}</Typography>
-            <Typography variant="caption" sx={{ px: 1 }}>Trabalhados</Typography>
-          </Grid>
-          {/* ATUALIZAÇÃO 2: Corrigido 'size' para 'item' */}
-          <Grid item xs={6}>
-            <Typography variant="h5" sx={{ fontWeight: 'bold' }}>{faltam}</Typography>
-            <Typography variant="caption" sx={{ px: 1 }}>Faltam</Typography>
-          </Grid>
-        </Grid>
+<Grid container sx={{ mt: 2, textAlign: 'center' }} columns={12}>
+  <Grid size={6} sx={{ borderRight: '1px solid rgba(255, 255, 255, 0.3)' }}>
+    <Typography variant="h5" sx={{ fontWeight: 'bold' }}>{trabalhados}</Typography>
+    <Typography variant="caption" sx={{ px: 1 }}>Trabalhados</Typography>
+  </Grid>
+  <Grid size={6}>
+    <Typography variant="h5" sx={{ fontWeight: 'bold' }}>{faltam}</Typography>
+    <Typography variant="caption" sx={{ px: 1 }}>Faltam</Typography>
+  </Grid>
+</Grid>
+
       </CardContent>
     </Card>
   );
