@@ -1,3 +1,5 @@
+// src/pages/Person/PersonList.jsx
+
 import React, { useState } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
@@ -13,11 +15,21 @@ import {
   DialogTitle,
   Button,
   TextField,
+  // 1. Novas importações para o layout de Card
+  Card,
+  CardContent,
+  CardActions,
+  Typography,
+  Stack,
+  Divider,
+  CircularProgress,
+  Skeleton
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { DataGrid } from '@mui/x-data-grid';
-import { ptBR } from '@mui/x-data-grid/locales';
+// 2. Ícones para detalhes no card
+import EmailIcon from '@mui/icons-material/Email';
+import PhoneIcon from '@mui/icons-material/Phone';
 
 const PersonList = () => {
   const { persons, loading, fetchPersons } = usePersons();
@@ -72,7 +84,7 @@ const PersonList = () => {
     if (!personToDelete) return;
     try {
       await axios.delete(`${API_URL}/pessoas/${personToDelete}`);
-      toast.success('Dirigente excluída com sucesso!');
+      toast.success('Dirigente excluído com sucesso!');
       fetchPersons();
     } catch (error) {
       console.error('Erro ao excluir dirigente:', error);
@@ -82,64 +94,63 @@ const PersonList = () => {
       setPersonToDelete(null);
     }
   };
-
-  const columns = [
-    { field: 'nome', headerName: 'Nome', flex: 1, minWidth: 220 },
-    { field: 'email', headerName: 'Email', flex: 1, minWidth: 220 },
-    { field: 'telefone', headerName: 'Telefone', flex: 0.5, minWidth: 150 },
-    {
-      field: 'actions',
-      headerName: 'Ações',
-      sortable: false,
-      filterable: false,
-      width: 120,
-      align: 'center',
-      headerAlign: 'center',
-      renderCell: (params) => (
-        <Box>
-          <Tooltip title="Editar">
-            <IconButton onClick={() => handleEditClick(params.row)}>
-              <EditIcon />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="Excluir">
-            <IconButton onClick={() => handleDeleteClick(params.row.id)}>
-              <DeleteIcon />
-            </IconButton>
-          </Tooltip>
-        </Box>
-      ),
-    },
-  ];
+  
+  // 3. A definição de "columns" do DataGrid foi removida.
+  
+  // 4. Se estiver carregando, mostra "esqueletos" de cards para melhor UX
+  if (loading) {
+    return (
+      <Stack spacing={2}>
+        <Skeleton variant="rounded" height={150} />
+        <Skeleton variant="rounded" height={150} />
+        <Skeleton variant="rounded" height={150} />
+      </Stack>
+    );
+  }
 
   return (
     <>
-      {/* MELHORIA 2: Container da tabela agora permite rolagem horizontal */}
-      <Box sx={{ width: '100%', overflowX: 'auto' }}>
-        <DataGrid
-          rows={persons}
-          columns={columns}
-          loading={loading}
-          autoHeight
-          localeText={ptBR.components.MuiDataGrid.defaultProps.localeText}
-          initialState={{
-            pagination: {
-              paginationModel: { page: 0, pageSize: 10 },
-            },
-          }}
-          pageSizeOptions={[5, 10, 25]}
-          sx={{
-            // Garante uma largura mínima para a tabela, forçando a rolagem
-            minWidth: 700,
-            '--DataGrid-overlayHeight': '300px',
-            '& .MuiDataGrid-cell:focus, & .MuiDataGrid-cell:focus-within': {
-              outline: 'none !important',
-            },
-          }}
-        />
-      </Box>
+      {/* 5. O DataGrid foi substituído por um Stack de Cards */}
+      <Stack spacing={2}>
+        {persons.map((person) => (
+          <Card key={person.id} variant="outlined">
+            <CardContent>
+              <Typography variant="h6" component="div" gutterBottom>
+                {person.nome}
+              </Typography>
+              <Stack spacing={1} sx={{ color: 'text.secondary' }}>
+                {person.email && (
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <EmailIcon fontSize="small" />
+                    <Typography variant="body2">{person.email}</Typography>
+                  </Box>
+                )}
+                {person.telefone && (
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <PhoneIcon fontSize="small" />
+                    <Typography variant="body2">{person.telefone}</Typography>
+                  </Box>
+                )}
+              </Stack>
+            </CardContent>
+            <Divider />
+            <CardActions sx={{ justifyContent: 'flex-end' }}>
+              <Tooltip title="Editar">
+                <IconButton onClick={() => handleEditClick(person)}>
+                  <EditIcon />
+                </IconButton>
+              </Tooltip>
+              <Tooltip title="Excluir">
+                <IconButton onClick={() => handleDeleteClick(person.id)}>
+                  <DeleteIcon />
+                </IconButton>
+              </Tooltip>
+            </CardActions>
+          </Card>
+        ))}
+      </Stack>
 
-      {/* Modal de Edição */}
+      {/* Os modais de edição e exclusão continuam funcionando da mesma forma */}
       {editingPerson && (
         <Dialog open={isModalOpen} onClose={handleCloseModal}>
           <DialogTitle>Editar Dirigente</DialogTitle>
@@ -158,7 +169,6 @@ const PersonList = () => {
         </Dialog>
       )}
 
-      {/* Modal de Confirmação de Exclusão */}
       <Dialog open={isConfirmOpen} onClose={() => setIsConfirmOpen(false)}>
         <DialogTitle>Confirmar Exclusão</DialogTitle>
         <DialogContent>
