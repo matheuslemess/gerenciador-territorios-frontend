@@ -19,6 +19,18 @@
 
 </div>
 
+## 
+
+<p align="center">
+<a href="README.md" style="text-decoration:none;padding:8px 15px;background:#61DAFB;color:#000;border-radius:8px;margin-right:5px;">🏠 Home</a>
+<a href="USO_CONGREGACAO.md" style="text-decoration:none;padding:8px 15px;background:#FF9900;color:#000;border-radius:8px;margin-right:5px;">📄 Uso na Congregação (JW)</a>
+<a href="#-back-end-api" style="text-decoration:none;padding:8px 15px;background:#8CC84B;color:#000;border-radius:8px;margin-right:5px;">🚀 Back-end</a>
+<a href="#-front-end-interface" style="text-decoration:none;padding:8px 15px;background:#61DAFB;color:#000;border-radius:8px;margin-right:5px;">💻 Front-end</a>
+<a href="#-configuração-e-execução-local" style="text-decoration:none;padding:8px 15px;background:#FF6B6B;color:#fff;border-radius:8px;margin-right:5px;">⚙️ Configuração</a>
+<a href="#-contato" style="text-decoration:none;padding:8px 15px;background:#6C5CE7;color:#fff;border-radius:8px;">📬 Contato</a>
+</p>
+
+
 ---
 
 ## 📄 Documentação
@@ -29,15 +41,11 @@
 ## 📋 Índice
 
 * [Arquitetura Geral](#arquitetura-geral)
-* [Back-end (API)](#back-end-api)
-* [Front-end (Interface)](#front-end-interface)
-* [Configuração e Execução Local](#configuração-e-execução-local)
 * [Deploy](#deploy)
 * [Roadmap Futuro](#roadmap-futuro)
 * [Demonstração Online](#demonstração-online)
 * [Como Contribuir](#como-contribuir)
 * [Licença](#licença)
-* [Contato](#contato)
 
 ---
 
