@@ -123,7 +123,7 @@ const CampaignProgressCard = ({ campaign }) => {
   const progresso = total > 0 ? (trabalhados / total) * 100 : 0;
 
   return (
-    <Card sx={{ backgroundColor: 'primary.main', color: 'primary.contrastText' }}>
+    <Card sx={{ }}>
       <CardHeader
         avatar={<CampaignIcon />}
         title={`Campanha Ativa: ${campaign.titulo}`}
@@ -140,10 +140,10 @@ const CampaignProgressCard = ({ campaign }) => {
           sx={{
             height: 10,
             borderRadius: 5,
-            bgcolor: 'rgba(255, 255, 255, 0.3)',
+            bgcolor: 'text.secondary',
             '& .MuiLinearProgress-bar': {
               borderRadius: 5,
-              bgcolor: 'primary.contrastText',
+              bgcolor: 'primary.main',
             },
           }}
         />

@@ -1,5 +1,5 @@
 <div align="center">
-<img alt="Logo" title="React DashGrid" src="./icongen.png"  widht="200" height="200" />
+<img alt="Logo" title="React DashGrid" src="./public/img/icongen.png"  widht="200" height="200" />
 
 # Gerenciador de Territórios (GENTerritórios)
 
@@ -20,6 +20,11 @@
 </div>
 
 ---
+
+## 📄 Documentação
+
+- [Uso na Congregação (JW)](./USO_CONGREGACAO.md)
+
 
 ## 📋 Índice
 
