@@ -55,7 +55,7 @@ graph LR
     A[👨‍💻<br/>Front-end<br/>React]
     B{🚀<br/>API<br/>Node.js/Express}
     C[(🐘<br/>Banco de Dados<br/>PostgreSQL)]
-    D([📦<br/>Storage<br/>AWS S3])  %% corrigido
+   D([📦<br/>Storage<br/>AWS S3])
 
     %% Conecta os nós
     A -- Requisições HTTP --> B
