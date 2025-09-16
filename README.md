@@ -20,9 +20,10 @@
 
 --- 
 
-## 📄 Documentação 
+## 🏛️ Uso na Congregação (JW) 
 
-- [Uso na Congregação (JW)](./USO_NA_CONGREGACAOJW.md) 
+- Se você deseja usar o **GENTerritórios** na sua congregação, clique aqui: [Uso na Congregação (JW)](./USO_NA_CONGREGACAOJW.md) para informações mais detalhadas.
+ 
 
 ## 📋 Índice 
 * [Arquitetura Geral](#arquitetura-geral) 
@@ -37,7 +38,7 @@
 
 ---
 
-## 🏛️ Arquitetura Geral
+## 📄 Arquitetura Geral
 
 O sistema é dividido em duas partes principais: o **Back-end (API)**, que implementa a lógica de negócio e comunica-se com o banco de dados e storage; e o **Front-end (Interface)**, a aplicação React que o usuário utiliza.
 
