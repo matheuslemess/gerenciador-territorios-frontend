@@ -22,7 +22,7 @@
 
 ## 📄 Documentação 
 
-- [Uso na Congregação (JW)](./USO_CONGREGACAO.md) 
+- [Uso na Congregação (JW)](./USO_NA_CONGREGACAOJW.md) 
 
 ## 📋 Índice 
 * [Arquitetura Geral](#arquitetura-geral) 
