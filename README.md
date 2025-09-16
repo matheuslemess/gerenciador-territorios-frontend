@@ -22,13 +22,27 @@
 ## 
 
 <p align="center">
-<a href="README.md" style="text-decoration:none;padding:8px 15px;background:#61DAFB;color:#000;border-radius:8px;margin-right:5px;">🏠 Home</a>
-<a href="USO_CONGREGACAO.md" style="text-decoration:none;padding:8px 15px;background:#FF9900;color:#000;border-radius:8px;margin-right:5px;">📄 Uso na Congregação (JW)</a>
-<a href="#-back-end-api" style="text-decoration:none;padding:8px 15px;background:#8CC84B;color:#000;border-radius:8px;margin-right:5px;">🚀 Back-end</a>
-<a href="#-front-end-interface" style="text-decoration:none;padding:8px 15px;background:#61DAFB;color:#000;border-radius:8px;margin-right:5px;">💻 Front-end</a>
-<a href="#-configuração-e-execução-local" style="text-decoration:none;padding:8px 15px;background:#FF6B6B;color:#fff;border-radius:8px;margin-right:5px;">⚙️ Configuração</a>
-<a href="#-contato" style="text-decoration:none;padding:8px 15px;background:#6C5CE7;color:#fff;border-radius:8px;">📬 Contato</a>
+<a href="README.md">
+  <img src="https://img.shields.io/badge/Home-🏠-000000?style=for-the-badge" alt="Home">
+</a>
+<a href="USO_CONGREGACAO.md">
+  <img src="https://img.shields.io/badge/Uso%20Congregação-📄-000000?style=for-the-badge" alt="Uso Congregação">
+</a>
+<a href="#-back-end-api">
+  <img src="https://img.shields.io/badge/Back--end-🚀-000000?style=for-the-badge" alt="Back-end">
+</a>
+<a href="#-front-end-interface">
+  <img src="https://img.shields.io/badge/Front--end-💻-000000?style=for-the-badge" alt="Front-end">
+</a>
+<a href="#-configuração-e-execução-local">
+  <img src="https://img.shields.io/badge/Configuração-⚙️-000000?style=for-the-badge" alt="Configuração">
+</a>
+<a href="#-contato">
+  <img src="https://img.shields.io/badge/Contato-📬-000000?style=for-the-badge" alt="Contato">
+</a>
 </p>
+
+
 
 
 ---
