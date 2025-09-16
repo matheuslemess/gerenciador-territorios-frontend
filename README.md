@@ -5,61 +5,35 @@
 
 **Um sistema completo para gerenciamento de territórios, composto por uma API RESTful e uma interface web moderna.**
 
-<p>
-<img src="https://img.shields.io/badge/Node.js-18%2B-green?style=for-the-badge&logo=node.js" alt="Node.js">
-<img src="https://img.shields.io/badge/Express.js-5.x-black?style=for-the-badge&logo=express" alt="Express.js">
-<img src="https://img.shields.io/badge/PostgreSQL-blue?style=for-the-badge&logo=postgresql" alt="PostgreSQL">
-<img src="https://img.shields.io/badge/React-19-blue?style=for-the-badge&logo=react" alt="React">
-<img src="https://img.shields.io/badge/Vite-5.x-purple?style=for-the-badge&logo=vite" alt="Vite">
-<img src="https://img.shields.io/badge/Material%20UI-5.x-blue?style=for-the-badge&logo=mui" alt="Material UI">
-<img src="https://img.shields.io/badge/AWS%20S3-orange?style=for-the-badge&logo=amazon-s3" alt="AWS S3">
-<img src="https://img.shields.io/badge/Deploy%20API-Render-46E3B7?style=for-the-badge&logo=render" alt="Deploy API na Render">
-<img src="https://img.shields.io/badge/Deploy%20UI-Vercel-black?style=for-the-badge&logo=vercel" alt="Deploy UI na Vercel">
-</p>
+<p> 
+<img src="https://img.shields.io/badge/Node.js-18%2B-green?style=for-the-badge&logo=node.js" alt="Node.js"> 
+<img src="https://img.shields.io/badge/Express.js-5.x-black?style=for-the-badge&logo=express" alt="Express.js"> 
+<img src="https://img.shields.io/badge/PostgreSQL-blue?style=for-the-badge&logo=postgresql" alt="PostgreSQL"> 
+<img src="https://img.shields.io/badge/React-19-blue?style=for-the-badge&logo=react" alt="React"> 
+<img src="https://img.shields.io/badge/Vite-5.x-purple?style=for-the-badge&logo=vite" alt="Vite"> 
+<img src="https://img.shields.io/badge/Material%20UI-5.x-blue?style=for-the-badge&logo=mui" alt="Material UI"> 
+<img src="https://img.shields.io/badge/AWS%20S3-orange?style=for-the-badge&logo=amazon-s3" alt="AWS S3"> 
+<img src="https://img.shields.io/badge/Deploy%20API-Render-46E3B7?style=for-the-badge&logo=render" alt="Deploy API na Render"> 
+<img src="https://img.shields.io/badge/Deploy%20UI-Vercel-black?style=for-the-badge&logo=vercel" alt="Deploy UI na Vercel"> 
+</p> 
+</div> 
 
-</div>
+--- 
 
-## 
+## 📄 Documentação 
 
-<p align="center">
-<a href="README.md">
-  <img src="https://img.shields.io/badge/Home-🏠-000000?style=for-the-badge" alt="Home">
-</a>
-<a href="USO_CONGREGACAO.md">
-  <img src="https://img.shields.io/badge/Uso%20Congregação-📄-000000?style=for-the-badge" alt="Uso Congregação">
-</a>
-<a href="#-back-end-api">
-  <img src="https://img.shields.io/badge/Back--end-🚀-000000?style=for-the-badge" alt="Back-end">
-</a>
-<a href="#-front-end-interface">
-  <img src="https://img.shields.io/badge/Front--end-💻-000000?style=for-the-badge" alt="Front-end">
-</a>
-<a href="#-configuração-e-execução-local">
-  <img src="https://img.shields.io/badge/Configuração-⚙️-000000?style=for-the-badge" alt="Configuração">
-</a>
-<a href="#-contato">
-  <img src="https://img.shields.io/badge/Contato-📬-000000?style=for-the-badge" alt="Contato">
-</a>
-</p>
+- [Uso na Congregação (JW)](./USO_CONGREGACAO.md) 
 
-
-
-
----
-
-## 📄 Documentação
-
-- [Uso na Congregação (JW)](./USO_CONGREGACAO.md)
-
-
-## 📋 Índice
-
-* [Arquitetura Geral](#arquitetura-geral)
-* [Deploy](#deploy)
-* [Roadmap Futuro](#roadmap-futuro)
-* [Demonstração Online](#demonstração-online)
-* [Como Contribuir](#como-contribuir)
-* [Licença](#licença)
+## 📋 Índice 
+* [Arquitetura Geral](#arquitetura-geral) 
+* [Back-end (API)](#back-end-api) 
+* [Front-end (Interface)](#front-end-interface) 
+* [Configuração e Execução Local](#configuração-e-execução-local) 
+* [Deploy](#deploy) * [Roadmap Futuro](#roadmap-futuro) 
+* [Demonstração Online](#demonstração-online) 
+* [Como Contribuir](#como-contribuir) 
+* [Licença](#licença) 
+* [Contato](#contato) 
 
 ---
 
